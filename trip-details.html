@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trip Details - Go Swift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1E90FF;
+            --primary-violet: #7B61FF;
+            --accent-teal: #00C2A8;
+            --dark-text: #0F172A;
+            --bg-soft: #F8FAFC;
+            --success: #16A34A;
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--bg-soft);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 60px;
+            border-radius: 60px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 144, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .content-container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .route-main {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .route-arrow {
+            color: var(--primary-blue);
+        }
+
+        .route-sub {
+            color: #64748B;
+            font-size: 1rem;
+        }
+
+        .trip-price {
+            text-align: right;
+        }
+
+        .price-main {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .price-sub {
+            color: #64748B;
+            font-size: 0.875rem;
+        }
+
+        .trip-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-soft);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .detail-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .vehicle-info {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-soft);
+            border-radius: 12px;
+        }
+
+        .vehicle-details {
+            flex: 1;
+        }
+
+        .vehicle-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .vehicle-specs {
+            display: flex;
+            gap: 1rem;
+            color: #64748B;
+            font-size: 0.875rem;
+        }
+
+        .owner-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--bg-soft);
+            border-radius: 12px;
+        }
+
+        .owner-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .owner-info {
+            flex: 1;
+        }
+
+        .owner-name {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .owner-stats {
+            display: flex;
+            gap: 1rem;
+            color: #64748B;
+            font-size: 0.875rem;
+        }
+
+        .rating {
+            color: #FFA500;
+            font-weight: 600;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .booking-card {
+            position: sticky;
+            top: 100px;
+        }
+
+        .seats-selector {
+            margin: 1.5rem 0;
+        }
+
+        .seats-input {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-top: 0.5rem;
+        }
+
+        .seats-input button {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary-blue);
+            background: white;
+            color: var(--primary-blue);
+            border-radius: 8px;
+            font-size: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .seats-input button:hover {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .seats-input button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .seats-input input {
+            width: 60px;
+            text-align: center;
+            padding: 0.5rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .price-breakdown {
+            background: var(--bg-soft);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-row.total {
+            font-weight: 700;
+            font-size: 1.125rem;
+            padding-top: 0.5rem;
+            border-top: 2px solid #E2E8F0;
+            margin-top: 0.5rem;
+        }
+
+        .review-item {
+            padding: 1rem;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+        }
+
+        .review-date {
+            color: #64748B;
+            font-size: 0.75rem;
+        }
+
+        .review-rating {
+            color: #FFA500;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-text {
+            color: #475569;
+            font-size: 0.875rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748B;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+            border-left: 4px solid #F59E0B;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .content-container {
+                grid-template-columns: 1fr;
+            }
+            .booking-card {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .route-main {
+                font-size: 1.5rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .trip-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .trip-price {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <img src="logo.jpg" alt=""> Go Swift
+            </a>
+            <a href="search.html" class="btn btn-secondary">← Back to Search</a>
+        </nav>
+    </header>
+
+    <div class="content-container" id="mainContent">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading trip details...</p>
+        </div>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Booking</h2>
+                <button class="modal-close" onclick="closeBookingModal()">×</button>
+            </div>
+            <div id="modalContent">
+                <div class="alert alert-warning">
+                    ⚠️ Please review your booking details before confirming
+                </div>
+                <div class="price-breakdown">
+                    <div class="price-row">
+                        <span>Seats:</span>
+                        <span id="modalSeats">-</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Price per seat:</span>
+                        <span id="modalPricePerSeat">-</span>
+                    </div>
+                    <div class="price-row total">
+                        <span>Total:</span>
+                        <span id="modalTotal">-</span>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem;">
+                    <p style="font-size: 0.875rem; color: #64748B; margin-bottom: 1rem;">
+                        By confirming, you agree to the trip terms and conditions.
+                    </p>
+                    <button class="btn btn-primary" style="width: 100%;" onclick="confirmBooking()">
+                        ✓ Confirm Booking
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTrip = null;
+        let selectedSeats = 1;
+
+        // Get trip ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const tripId = urlParams.get('id');
+
+        if (!tripId) {
+            alert('Invalid trip ID');
+            window.location.href = 'search.html';
+        }
+
+        // Load trip details
+        async function loadTripDetails() {
+            try {
+                const response = await fetch(`api/trips.php?action=get&id=${tripId}`);
+                const result = await response.json();
+
+                if (result.success && result.trip) {
+                    currentTrip = result.trip;
+                    renderTripDetails(currentTrip);
+                } else {
+                    document.getElementById('mainContent').innerHTML = `
+                        <div class="card" style="text-align: center;">
+                            <h2>Trip Not Found</h2>
+                            <p style="color: #64748B; margin: 1rem 0;">This trip may have been cancelled or removed.</p>
+                            <a href="search.html" class="btn btn-primary">← Back to Search</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading trip:', error);
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="card" style="text-align: center;">
+                        <h2>Error Loading Trip</h2>
+                        <p style="color: #64748B; margin: 1rem 0;">Please try again later</p>
+                        <a href="search.html" class="btn btn-primary">← Back to Search</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Render trip details
+        function renderTripDetails(trip) {
+            const departDateTime = new Date(trip.depart_datetime);
+            const dateStr = departDateTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const timeStr = departDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+            document.getElementById('mainContent').innerHTML = `
+                <div class="main-content">
+                    <!-- Trip Overview -->
+                    <div class="card">
+                        <div class="trip-header">
+                            <div class="trip-route">
+                                <div class="route-main">
+                                    <span>${trip.departure_city_name}</span>
+                                    <span class="route-arrow">→</span>
+                                    <span>${trip.arrival_city_name}</span>
+                                </div>
+                                <div class="route-sub">
+                                    ${trip.departure_area_name || ''} ${trip.departure_area_name && trip.arrival_area_name ? '→' : ''} ${trip.arrival_area_name || ''}
+                                </div>
+                            </div>
+                            <div class="trip-price">
+                                <div class="price-main">Rs ${trip.price_per_seat}</div>
+                                <div class="price-sub">per seat</div>
+                            </div>
+                        </div>
+
+                        <div class="trip-details-grid">
+                            <div class="detail-item">
+                                <div class="detail-icon">📅</div>
+                                <div class="detail-label">Date & Time</div>
+                                <div class="detail-value">${dateStr} at ${timeStr}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-icon">💺</div>
+                                <div class="detail-label">Available Seats</div>
+                                <div class="detail-value">${trip.seats_left} seats left</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-icon">🧳</div>
+                                <div class="detail-label">Luggage</div>
+                                <div class="detail-value">${trip.luggage_allowance || 'Not specified'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-icon">⏱️</div>
+                                <div class="detail-label">Estimated Duration</div>
+                                <div class="detail-value">~4-5 hours</div>
+                            </div>
+                        </div>
+
+                        ${trip.notes ? `
+                        <div style="padding: 1rem; background: var(--bg-soft); border-radius: 8px;">
+                            <strong>Trip Notes:</strong><br>
+                            <span>${trip.notes}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Vehicle Information -->
+                    <div class="card">
+                        <h3 class="section-title">🚗 Vehicle Information</h3>
+                        <div class="vehicle-info">
+                            <div class="vehicle-details">
+                                <div class="vehicle-name">${trip.make} ${trip.model} ${trip.year}</div>
+                                <div class="vehicle-specs">
+                                    <span>🚗 ${trip.vehicle_type}</span>
+                                    <span>🎨 ${trip.color || 'N/A'}</span>
+                                    <span>💺 ${trip.capacity} seats</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Owner Information -->
+                    <div class="card">
+                        <h3 class="section-title">👤 About the Driver</h3>
+                        <div class="owner-card">
+                            <div class="owner-avatar">${trip.owner_name.charAt(0).toUpperCase()}</div>
+                            <div class="owner-info">
+                                <div class="owner-name">${trip.owner_name}</div>
+                                <div class="owner-stats">
+                                    <span class="rating">⭐ ${trip.owner_rating || 'New'}</span>
+                                    <span>• ${trip.completed_trips || 0} trips</span>
+                                    <span>• ${trip.total_reviews || 0} reviews</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${trip.reviews && trip.reviews.length > 0 ? `
+                        <div style="margin-top: 1.5rem;">
+                            <h4 style="margin-bottom: 1rem;">Recent Reviews</h4>
+                            ${trip.reviews.map(review => `
+                                <div class="review-item">
+                                    <div class="review-header">
+                                        <span class="reviewer-name">${review.reviewer_name}</span>
+                                        <span class="review-date">${new Date(review.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                    <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                                    <div class="review-text">${review.comment || 'No comment'}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="card booking-card">
+                        <h3 style="margin-bottom: 1rem;">Book This Trip</h3>
+                        
+                        <div class="seats-selector">
+                            <label style="font-weight: 600; margin-bottom: 0.5rem; display: block;">Number of Seats</label>
+                            <div class="seats-input">
+                                <button onclick="decreaseSeats()" ${trip.seats_left === 0 ? 'disabled' : ''}>-</button>
+                                <input type="number" id="seatsInput" value="1" min="1" max="${trip.seats_left}" readonly>
+                                <button onclick="increaseSeats()" ${trip.seats_left === 0 ? 'disabled' : ''}>+</button>
+                            </div>
+                        </div>
+
+                        <div class="price-breakdown">
+                            <div class="price-row">
+                                <span>Price per seat:</span>
+                                <span>Rs ${trip.price_per_seat}</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Seats:</span>
+                                <span id="seatsCount">1</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Total:</span>
+                                <span id="totalPrice">Rs ${trip.price_per_seat}</span>
+                            </div>
+                        </div>
+
+                        ${trip.seats_left > 0 ? `
+                            <button class="btn btn-primary" style="width: 100%;" onclick="openBookingModal()">
+                                🎫 Book Now
+                            </button>
+                        ` : `
+                            <button class="btn btn-primary" style="width: 100%; opacity: 0.6;" disabled>
+                                No Seats Available
+                            </button>
+                        `}
+
+                        <p style="font-size: 0.75rem; color: #64748B; text-align: center; margin-top: 1rem;">
+                            Free cancellation up to 24 hours before departure
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Increase seats
+        function increaseSeats() {
+            const input = document.getElementById('seatsInput');
+            const max = parseInt(input.max);
+            if (selectedSeats < max) {
+                selectedSeats++;
+                updateSeatsDisplay();
+            }
+        }
+
+        // Decrease seats
+        function decreaseSeats() {
+            if (selectedSeats > 1) {
+                selectedSeats--;
+                updateSeatsDisplay();
+            }
+        }
+
+        // Update seats display
+        function updateSeatsDisplay() {
+            document.getElementById('seatsInput').value = selectedSeats;
+            document.getElementById('seatsCount').textContent = selectedSeats;
+            const total = currentTrip.price_per_seat * selectedSeats;
+            document.getElementById('totalPrice').textContent = `Rs ${total}`;
+        }
+
+        // Open booking modal
+        function openBookingModal() {
+            document.getElementById('modalSeats').textContent = selectedSeats;
+            document.getElementById('modalPricePerSeat').textContent = `Rs ${currentTrip.price_per_seat}`;
+            document.getElementById('modalTotal').textContent = `Rs ${currentTrip.price_per_seat * selectedSeats}`;
+            document.getElementById('bookingModal').classList.add('active');
+        }
+
+        // Close booking modal
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.remove('active');
+        }
+
+        // Confirm booking
+        async function confirmBooking() {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Processing booking...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('api/bookings.php?action=create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        trip_id: tripId,
+                        seats_booked: selectedSeats
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    modalContent.innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">✅</div>
+                            <h2 style="margin-bottom: 1rem;">Booking Successful!</h2>
+                            <p style="color: #64748B; margin-bottom: 1rem;">
+                                Your booking request has been sent to the vehicle owner. 
+                                You'll be notified once they confirm.
+                            </p>
+                            <div style="background: var(--bg-soft); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                                <strong>Booking Code:</strong> 
+                                <span style="color: var(--primary-blue); font-size: 1.25rem;">${result.booking_code}</span>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%;" onclick="window.location.href='dashboard-rider.html'">
+                                Go to My Bookings
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    modalContent.innerHTML = `
+                        <div style="text-align: center;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
+                            <h2 style="margin-bottom: 1rem;">Booking Failed</h2>
+                            <p style="color: #64748B; margin-bottom: 1.5rem;">
+                                ${result.error || 'Something went wrong. Please try again.'}
+                            </p>
+                            <button class="btn btn-primary" style="width: 100%;" onclick="closeBookingModal()">
+                                Try Again
+                            </button>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Booking error:', error);
+                modalContent.innerHTML = `
+                    <div style="text-align: center;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">❌</div>
+                        <h2 style="margin-bottom: 1rem;">Connection Error</h2>
+                        <p style="color: #64748B; margin-bottom: 1.5rem;">
+                            Please check your internet connection and try again.
+                        </p>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="closeBookingModal()">
+                            Close
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Close modal on outside click
+        document.getElementById('bookingModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeBookingModal();
+            }
+        });
+
+        // Load trip on page load
+        loadTripDetails();
+    </script>
+</body>
+</html>

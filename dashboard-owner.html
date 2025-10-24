@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Owner Dashboard - Go Swift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1E90FF;
+            --primary-violet: #7B61FF;
+            --accent-teal: #00C2A8;
+            --dark-text: #0F172A;
+            --bg-soft: #F8FAFC;
+            --success: #16A34A;
+            --error: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--bg-soft);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background-clip: text;
+            text-decoration: none;
+        }
+        .logo img{
+            height: 60px;
+            border-radius: 60px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #64748B;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(30, 144, 255, 0.1);
+            color: var(--primary-blue);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 144, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.blue {
+            background: rgba(30, 144, 255, 0.1);
+        }
+
+        .stat-icon.green {
+            background: rgba(22, 163, 74, 0.1);
+        }
+
+        .stat-icon.orange {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .stat-label {
+            color: #64748B;
+            font-size: 0.875rem;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid #E2E8F0;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: #64748B;
+            font-weight: 600;
+            transition: all 0.3s;
+            background: none;
+            border-left: none;
+            border-right: none;
+            border-top: none;
+        }
+
+        .tab:hover,
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        /* Trip Cards */
+        .trip-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .trip-item {
+            padding: 1.5rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .trip-item:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.1);
+        }
+
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .trip-route {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .trip-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-completed {
+            background: rgba(100, 116, 139, 0.1);
+            color: #64748B;
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .trip-details {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #64748B;
+            font-size: 0.875rem;
+            flex-wrap: wrap;
+        }
+
+        .trip-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #64748B;
+        }
+
+        .empty-state h3 {
+            margin: 1rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .trip-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <img src="logo.jpg" alt=""> Go Swift
+            </a>
+            <div class="nav-actions">
+                <div class="notification-bell">
+                    🔔
+                    <span class="notification-badge">3</span>
+                </div>
+                <div class="user-menu">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <span id="userName">Loading...</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a class="active" onclick="showSection('overview')">📊 Overview</a></li>
+                <li><a onclick="showSection('trips')">🚗 My Trips</a></li>
+                <li><a onclick="showSection('bookings')">📋 Booking Requests</a></li>
+                <li><a onclick="showSection('vehicles')">🚙 My Vehicles</a></li>
+                <li><a onclick="showSection('messages')">💬 Messages</a></li>
+                <li><a onclick="showSection('earnings')">💰 Earnings</a></li>
+                <li><a onclick="showSection('settings')">⚙️ Settings</a></li>
+                <li><a onclick="logout()">🚪 Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- Overview Section -->
+            <div id="section-overview" class="dashboard-section">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <a href="post-trip.html" class="btn btn-primary">+ Post New Trip</a>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">🚗</div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Active Trips</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">⏳</div>
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">Pending Requests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">✓</div>
+                        <div class="stat-value">48</div>
+                        <div class="stat-label">Completed Trips</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">💰</div>
+                        <div class="stat-value">Rs 45,600</div>
+                        <div class="stat-label">Total Earnings</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Booking Requests</h2>
+                        <button class="btn btn-secondary btn-sm" onclick="showSection('bookings')">View All</button>
+                    </div>
+                    
+                    <div class="trip-list" id="recentBookings">
+                        <div style="text-align: center; padding: 2rem; color: #64748B;">
+                            Loading booking requests...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- My Trips Section -->
+            <div id="section-trips" class="dashboard-section hidden">
+                <div class="page-header">
+                    <h1 class="page-title">My Trips</h1>
+                    <a href="post-trip.html" class="btn btn-primary">+ Post New Trip</a>
+                </div>
+
+                <div class="content-section">
+                    <div class="tabs">
+                        <button class="tab active" onclick="filterTrips('active')">Active (12)</button>
+                        <button class="tab" onclick="filterTrips('completed')">Completed (48)</button>
+                        <button class="tab" onclick="filterTrips('cancelled')">Cancelled (3)</button>
+                    </div>
+
+                    <div class="trip-list" id="tripsList">
+                        <!-- Active trips -->
+                        <div class="trip-item trip-active">
+                            <div class="trip-header">
+                                <div>
+                                    <div class="trip-route">Lahore → Islamabad</div>
+                                    <div style="color: #64748B; font-size: 0.875rem;">Gulberg → F-7</div>
+                                </div>
+                                <span class="trip-status status-active">Active</span>
+                            </div>
+                            <div class="trip-details">
+                                <span>📅 Oct 15, 2024 at 08:00 AM</span>
+                                <span>🚗 Honda Civic 2020</span>
+                                <span>💺 1/3 seats left</span>
+                                <span>💰 Rs 1,200/seat</span>
+                            </div>
+                            <div class="trip-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="viewTrip(1)">👁️ View Details</button>
+                                <button class="btn btn-danger btn-sm" onclick="cancelTrip(1)">🗑️ Cancel Trip</button>
+                            </div>
+                        </div>
+
+                        <div class="trip-item trip-active">
+                            <div class="trip-header">
+                                <div>
+                                    <div class="trip-route">Islamabad → Lahore</div>
+                                    <div style="color: #64748B; font-size: 0.875rem;">F-7 → DHA</div>
+                                </div>
+                                <span class="trip-status status-active">Active</span>
+                            </div>
+                            <div class="trip-details">
+                                <span>📅 Oct 16, 2024 at 06:00 PM</span>
+                                <span>🚗 Honda Civic 2020</span>
+                                <span>💺 3/3 seats left</span>
+                                <span>💰 Rs 1,200/seat</span>
+                            </div>
+                            <div class="trip-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="viewTrip(2)">👁️ View Details</button>
+                                <button class="btn btn-danger btn-sm" onclick="cancelTrip(2)">🗑️ Cancel Trip</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Requests Section -->
+            <div id="section-bookings" class="dashboard-section hidden">
+    <div class="page-header">
+        <h1 class="page-title">Booking Requests</h1>
+    </div>
+
+    <div class="content-section">
+        <div class="trip-list" id="allBookings">
+            <div style="text-align: center; padding: 2rem; color: #64748B;">
+                Loading booking requests...
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- My Vehicles Section -->
+            <div id="section-vehicles" class="dashboard-section hidden">
+                <div class="page-header">
+                    <h1 class="page-title">My Vehicles</h1>
+                    <a href="vehicle-register.html" class="btn btn-primary">+ Add Vehicle</a>
+                </div>
+
+                <div class="content-section">
+                    <div class="trip-list" id="vehiclesList">
+                        <div class="empty-state">
+                            <h3>🚗 Loading vehicles...</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Section -->
+            <div id="section-messages" class="dashboard-section hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Messages</h1>
+                </div>
+
+                <div class="content-section">
+                    <div class="empty-state">
+                        <h3>💬 No Messages Yet</h3>
+                        <p>Your messages with riders will appear here</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Earnings Section -->
+            <div id="section-earnings" class="dashboard-section hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Earnings</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon green">💰</div>
+                        <div class="stat-value">Rs 45,600</div>
+                        <div class="stat-label">Total Earnings</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon blue">📅</div>
+                        <div class="stat-value">Rs 8,400</div>
+                        <div class="stat-label">This Month</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">⏳</div>
+                        <div class="stat-value">Rs 2,400</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Recent Transactions</h3>
+                    <div class="trip-list">
+                        <div class="trip-item">
+                            <div class="trip-header">
+                                <div>
+                                    <div class="trip-route">Lahore → Islamabad</div>
+                                    <div style="color: #64748B; font-size: 0.875rem;">Oct 10, 2024</div>
+                                </div>
+                                <span style="color: var(--success); font-weight: 700; font-size: 1.125rem;">+ Rs 2,400</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div id="section-settings" class="dashboard-section hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Settings</h1>
+                </div>
+
+                <div class="content-section">
+                    <h3 style="margin-bottom: 1rem;">Account Settings</h3>
+                    <div class="trip-list">
+                        <div class="trip-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="trip-route">Profile Information</div>
+                                    <div style="color: #64748B; font-size: 0.875rem;">Update your name, email, phone</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm">Edit Profile</button>
+                            </div>
+                        </div>
+
+                        <div class="trip-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="trip-route">Change Password</div>
+                                    <div style="color: #64748B; font-size: 0.875rem;">Update your password</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm">Change</button>
+                            </div>
+                        </div>
+
+                        <div class="trip-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="trip-route">Notification Preferences</div>
+                                    <div style="color: #64748B; font-size: 0.875rem;">Manage email and push notifications</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm">Manage</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+       // Complete error-free script for dashboard-owner.html
+// Replace the entire <script> section with this code
+
+// Check authentication on page load
+async function checkAuth() {
+    try {
+        const response = await fetch('api/auth.php?action=check-auth');
+        const result = await response.json();
+        
+        if (!result.authenticated) {
+            window.location.href = 'auth.html';
+            return;
+        }
+        
+        const user = result.user;
+        document.getElementById('userName').textContent = user.name;
+        
+        const initials = user.name.split(' ').map(function(n) { return n[0]; }).join('').toUpperCase();
+        document.getElementById('userAvatar').textContent = initials;
+        
+        if (user.role !== 'owner') {
+            window.location.href = 'dashboard-rider.html';
+        }
+        
+    } catch (error) {
+        console.error('Error checking auth:', error);
+        window.location.href = 'auth.html';
+    }
+}
+
+// Show different sections
+function showSection(sectionName) {
+    // Hide all sections
+    const sections = document.querySelectorAll('.dashboard-section');
+    for (let i = 0; i < sections.length; i++) {
+        sections[i].classList.add('hidden');
+    }
+    
+    // Show selected section
+    const targetSection = document.getElementById('section-' + sectionName);
+    if (targetSection) {
+        targetSection.classList.remove('hidden');
+    }
+    
+    // Load data for specific sections
+    if (sectionName === 'vehicles') {
+        loadVehicles();
+    } else if (sectionName === 'bookings') {
+        loadAllBookingRequests();
+    }
+    
+    // Update active menu item
+    const links = document.querySelectorAll('.sidebar-menu a');
+    for (let i = 0; i < links.length; i++) {
+        links[i].classList.remove('active');
+    }
+}
+
+// Load vehicles function - FIXED
+async function loadVehicles() {
+    const container = document.getElementById('vehiclesList');
+    container.innerHTML = '<div style="text-align: center; padding: 2rem;">Loading vehicles...</div>';
+    
+    try {
+        const response = await fetch('api/vehicles.php?action=my-vehicles');
+        const result = await response.json();
+        
+        if (result.success && result.vehicles && result.vehicles.length > 0) {
+            let html = '';
+            for (let i = 0; i < result.vehicles.length; i++) {
+                const vehicle = result.vehicles[i];
+                let statusBadge = '';
+                
+                if (vehicle.status === 'verified') {
+                    statusBadge = '<span class="trip-status status-active">Verified</span>';
+                } else if (vehicle.status === 'pending') {
+                    statusBadge = '<span class="trip-status status-pending">Pending Verification</span>';
+                } else {
+                    statusBadge = '<span class="trip-status status-cancelled">Rejected</span>';
+                }
+                
+                html += '<div class="trip-item">';
+                html += '  <div class="trip-header">';
+                html += '    <div>';
+                html += '      <div class="trip-route">' + vehicle.make + ' ' + vehicle.model + ' ' + vehicle.year + '</div>';
+                html += '      <div style="color: #64748B; font-size: 0.875rem;">' + vehicle.plate_number + '</div>';
+                html += '    </div>';
+                html += statusBadge;
+                html += '  </div>';
+                html += '  <div class="trip-details">';
+                html += '    <span>🚗 ' + vehicle.type + '</span>';
+                html += '    <span>🎨 ' + (vehicle.color || 'N/A') + '</span>';
+                html += '    <span>💺 ' + vehicle.capacity + ' seats</span>';
+                html += '    <span>📍 ' + vehicle.city_name + '</span>';
+                html += '  </div>';
+                html += '  <div class="trip-actions">';
+                html += '    <button class="btn btn-secondary btn-sm" onclick="viewVehicle(' + vehicle.id + ')">👁️ View Details</button>';
+                if (vehicle.status === 'verified') {
+                    html += '    <button class="btn btn-primary btn-sm" onclick="window.location.href=\'post-trip.html\'">➕ Post Trip</button>';
+                }
+                html += '  </div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<div class="empty-state">' +
+                '<div class="empty-icon">🚗</div>' +
+                '<h3>No Vehicles Registered</h3>' +
+                '<p class="empty-text">Register your vehicle to start posting trips and earning.</p>' +
+                '<a href="vehicle-register.html" class="btn btn-primary">+ Register Vehicle</a>' +
+                '</div>';
+        }
+    } catch (error) {
+        console.error('Error loading vehicles:', error);
+        container.innerHTML = '<div class="empty-state">' +
+            '<h3>❌ Failed to load vehicles</h3>' +
+            '<p class="empty-text">Please try again</p>' +
+            '<button class="btn btn-primary" onclick="loadVehicles()">Retry</button>' +
+            '</div>';
+    }
+}
+
+// Load all booking requests
+async function loadAllBookingRequests() {
+    const container = document.getElementById('allBookings');
+    container.innerHTML = '<div style="text-align: center; padding: 2rem;">Loading...</div>';
+    
+    try {
+        const response = await fetch('api/bookings.php?action=booking-requests&status=pending');
+        const result = await response.json();
+        
+        if (result.success && result.requests && result.requests.length > 0) {
+            let html = '';
+            for (let i = 0; i < result.requests.length; i++) {
+                const req = result.requests[i];
+                const date = new Date(req.depart_datetime);
+                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                html += '<div class="trip-item">';
+                html += '  <div class="trip-header">';
+                html += '    <div>';
+                html += '      <div class="trip-route">' + req.departure_city_name + ' → ' + req.arrival_city_name + '</div>';
+                html += '      <div style="color: #64748B; font-size: 0.875rem;">' + (req.departure_area_name || '') + ' → ' + (req.arrival_area_name || '') + '</div>';
+                html += '    </div>';
+                html += '    <span class="trip-status status-pending">Pending</span>';
+                html += '  </div>';
+                html += '  <div class="trip-details">';
+                html += '    <span>📅 ' + dateStr + ' at ' + timeStr + '</span>';
+                html += '    <span>👤 ' + req.rider_name + '</span>';
+                html += '    <span>💺 ' + req.seats_booked + ' seat(s)</span>';
+                html += '    <span>💰 Rs ' + req.total_price + '</span>';
+                html += '  </div>';
+                html += '  <div class="trip-actions">';
+                html += '    <button class="btn btn-success btn-sm" onclick="acceptBooking(' + req.id + ')">✓ Accept</button>';
+                html += '    <button class="btn btn-danger btn-sm" onclick="rejectBooking(' + req.id + ')">✗ Reject</button>';
+                html += '    <button class="btn btn-secondary btn-sm">💬 Message</button>';
+                html += '  </div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<div class="empty-state">' +
+                '<div class="empty-icon">📋</div>' +
+                '<h3>No Booking Requests</h3>' +
+                '<p class="empty-text">When riders book your trips, requests will appear here.</p>' +
+                '</div>';
+        }
+    } catch (error) {
+        console.error('Error loading booking requests:', error);
+        container.innerHTML = '<div class="empty-state">' +
+            '<h3>❌ Failed to load booking requests</h3>' +
+            '<p class="empty-text">Please try again</p>' +
+            '</div>';
+    }
+}
+
+// Filter trips by status
+function filterTrips(status) {
+    const tripsList = document.getElementById('tripsList');
+    const allTrips = tripsList.querySelectorAll('.trip-item');
+    
+    // Update active tab
+    const tabs = document.querySelectorAll('.tab');
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+    }
+    if (window.event && window.event.target) {
+        window.event.target.classList.add('active');
+    }
+    
+    // Show/hide trips based on status
+    if (status === 'active') {
+        for (let i = 0; i < allTrips.length; i++) {
+            if (allTrips[i].classList.contains('trip-active')) {
+                allTrips[i].style.display = 'block';
+            } else {
+                allTrips[i].style.display = 'none';
+            }
+        }
+    } else if (status === 'completed') {
+        tripsList.innerHTML = '<div class="empty-state"><h3>✓ No Completed Trips Yet</h3><p>Your completed trips will appear here</p></div>';
+    } else if (status === 'cancelled') {
+        tripsList.innerHTML = '<div class="empty-state"><h3>🗑️ No Cancelled Trips</h3><p>Your cancelled trips will appear here</p></div>';
+    }
+}
+
+// Accept booking
+async function acceptBooking(bookingId) {
+    if (!confirm('Accept this booking request?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('api/bookings.php?action=confirm', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ booking_id: bookingId })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('✅ Booking accepted successfully!', 'success');
+            if (window.event && window.event.target) {
+                const tripItem = window.event.target.closest('.trip-item');
+                if (tripItem) {
+                    tripItem.style.display = 'none';
+                }
+            }
+        } else {
+            showToast('❌ Error: ' + (result.error || 'Failed to accept booking'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('❌ Failed to accept booking. Please try again.', 'error');
+    }
+}
+
+// Load booking requests for overview
+async function loadBookingRequests() {
+    const container = document.getElementById('recentBookings');
+    
+    try {
+        const response = await fetch('api/bookings.php?action=booking-requests&status=pending');
+        const result = await response.json();
+        
+        if (result.success && result.requests && result.requests.length > 0) {
+            let html = '';
+            const limit = Math.min(3, result.requests.length);
+            for (let i = 0; i < limit; i++) {
+                const req = result.requests[i];
+                const date = new Date(req.depart_datetime);
+                const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                
+                html += '<div class="trip-item">';
+                html += '  <div class="trip-header">';
+                html += '    <div>';
+                html += '      <div class="trip-route">' + req.departure_city_name + ' → ' + req.arrival_city_name + '</div>';
+                html += '      <div style="color: #64748B; font-size: 0.875rem;">' + dateStr + '</div>';
+                html += '    </div>';
+                html += '    <span class="trip-status status-pending">Pending</span>';
+                html += '  </div>';
+                html += '  <div class="trip-details">';
+                html += '    <span>👤 ' + req.rider_name + '</span>';
+                html += '    <span>💺 ' + req.seats_booked + ' seat(s)</span>';
+                html += '    <span>💰 Rs ' + req.total_price + '</span>';
+                html += '  </div>';
+                html += '  <div class="trip-actions">';
+                html += '    <button class="btn btn-success btn-sm" onclick="acceptBooking(' + req.id + ')">✓ Accept</button>';
+                html += '    <button class="btn btn-danger btn-sm" onclick="rejectBooking(' + req.id + ')">✗ Reject</button>';
+                html += '  </div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<div style="text-align: center; padding: 2rem; color: #64748B;">No pending booking requests</div>';
+        }
+    } catch (error) {
+        console.error('Error loading booking requests:', error);
+    }
+}
+
+// Reject booking
+async function rejectBooking(bookingId) {
+    var reason = prompt('Please provide a reason for rejection (optional):');
+    if (reason === null) return;
+    
+    try {
+        const response = await fetch('api/bookings.php?action=cancel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                booking_id: bookingId,
+                reason: reason || 'No reason provided'
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('✅ Booking rejected', 'success');
+            if (window.event && window.event.target) {
+                const tripItem = window.event.target.closest('.trip-item');
+                if (tripItem) {
+                    tripItem.style.display = 'none';
+                }
+            }
+        } else {
+            showToast('❌ Error: ' + (result.error || 'Failed to reject booking'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('❌ Failed to reject booking. Please try again.', 'error');
+    }
+}
+
+// View trip details
+function viewTrip(tripId) {
+    window.location.href = 'trip-details.html?id=' + tripId;
+}
+
+// Cancel trip
+async function cancelTrip(tripId) {
+    if (!confirm('Are you sure you want to cancel this trip? All bookings will be cancelled.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('api/trips.php?action=cancel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ trip_id: tripId })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('✅ Trip cancelled successfully', 'success');
+            if (window.event && window.event.target) {
+                const tripItem = window.event.target.closest('.trip-item');
+                if (tripItem) {
+                    tripItem.style.display = 'none';
+                }
+            }
+        } else {
+            showToast('❌ Error: ' + (result.error || 'Failed to cancel trip'), 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('❌ Failed to cancel trip. Please try again.', 'error');
+    }
+}
+
+// Edit vehicle
+function editVehicle(vehicleId) {
+    showToast('📝 Edit vehicle feature coming soon!', 'info');
+}
+
+// View vehicle
+function viewVehicle(vehicleId) {
+    showToast('👁️ Vehicle details: Vehicle #' + vehicleId, 'info');
+}
+
+// Logout function
+async function logout() {
+    if (!confirm('Are you sure you want to logout?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('api/auth.php?action=logout', {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showToast('✅ Logged out successfully', 'success');
+            setTimeout(function() {
+                window.location.href = 'index.html';
+            }, 1000);
+        }
+    } catch (error) {
+        console.error('Error logging out:', error);
+        window.location.href = 'index.html';
+    }
+}
+
+// Show toast notification
+function showToast(message, type) {
+    if (!type) type = 'info';
+    
+    const toast = document.createElement('div');
+    var bgColor = '#1E90FF';
+    if (type === 'success') bgColor = '#16A34A';
+    if (type === 'error') bgColor = '#EF4444';
+    
+    toast.style.cssText = 'position: fixed; bottom: 20px; right: 20px; background: ' + bgColor + '; color: white; padding: 1rem 1.5rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; animation: slideIn 0.3s ease; max-width: 400px;';
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(function() {
+        toast.style.animation = 'slideOut 0.3s ease';
+        setTimeout(function() {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    }, 3000);
+}
+
+// Add slide animations
+var styleEl = document.createElement('style');
+styleEl.textContent = '@keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(400px); opacity: 0; } }';
+document.head.appendChild(styleEl);
+
+// Page load initialization
+window.addEventListener('DOMContentLoaded', function() {
+    checkAuth();
+    loadBookingRequests();
+});
+
+// Auto-load vehicles if on vehicles page
+if (window.location.hash === '#vehicles') {
+    window.addEventListener('load', function() {
+        showSection('vehicles');
+    });
+}
+    </script>
+</body>
+</html>

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Ride - Go Swift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1E90FF;
+            --primary-violet: #7B61FF;
+            --accent-teal: #00C2A8;
+            --dark-text: #0F172A;
+            --bg-soft: #F8FAFC;
+            --success: #16A34A;
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--bg-soft);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background-clip: text;
+            text-decoration: none;
+        }
+        .logo img{
+            height: 60px;
+            border-radius: 60px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 144, 255, 0.4);
+        }
+
+        .search-section {
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .search-container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--dark-text);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .filter-chip {
+            padding: 0.5rem 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+            font-size: 0.875rem;
+        }
+
+        .filter-chip:hover,
+        .filter-chip.active {
+            border-color: var(--primary-blue);
+            background: rgba(30, 144, 255, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .results-section {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .results-count {
+            font-size: 1.125rem;
+            color: #64748B;
+        }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        .trip-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .trip-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .trip-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .trip-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .trip-route {
+            flex: 1;
+        }
+
+        .route-cities {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .city-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .route-arrow {
+            color: var(--primary-blue);
+            font-size: 1.5rem;
+        }
+
+        .route-areas {
+            color: #64748B;
+            font-size: 0.875rem;
+        }
+
+        .trip-price {
+            text-align: right;
+        }
+
+        .price-amount {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .price-label {
+            font-size: 0.75rem;
+            color: #64748B;
+        }
+
+        .trip-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            padding: 1rem 0;
+            border-top: 1px solid #F1F5F9;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .detail-icon {
+            color: var(--primary-blue);
+        }
+
+        .detail-text {
+            font-size: 0.875rem;
+            color: #475569;
+        }
+
+        .trip-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .owner-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .owner-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .owner-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .owner-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .owner-rating {
+            font-size: 0.75rem;
+            color: #64748B;
+        }
+
+        .rating-stars {
+            color: #FFA500;
+        }
+
+        .btn-book {
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-book:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 16px;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: #64748B;
+            margin-bottom: 1.5rem;
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-card {
+            height: 200px;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .route-cities {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .route-arrow {
+                transform: rotate(90deg);
+            }
+
+            .trip-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .trip-price {
+                text-align: left;
+            }
+
+            .trip-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <img src="logo.jpg" alt=""> Go Swift
+            </a>
+            <button class="btn btn-primary">Dashboard</button>
+        </nav>
+    </header>
+
+    <div class="search-section">
+        <div class="search-container">
+            <h1 style="margin-bottom: 1.5rem;">Find Your Perfect Ride</h1>
+            <form class="search-form" id="searchForm">
+                <div class="form-group">
+                    <label for="fromCity">From City</label>
+                    <select id="fromCity" required>
+                        <option value="">Select city</option>
+                        <option value="1">Karachi</option>
+                        <option value="2">Lahore</option>
+                        <option value="3">Islamabad</option>
+                        <option value="4">Rawalpindi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="fromArea">From Area</label>
+                    <select id="fromArea">
+                        <option value="">Any area</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="toCity">To City</label>
+                    <select id="toCity" required>
+                        <option value="">Select city</option>
+                        <option value="1">Karachi</option>
+                        <option value="2">Lahore</option>
+                        <option value="3">Islamabad</option>
+                        <option value="4">Rawalpindi</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="toArea">To Area</label>
+                    <select id="toArea">
+                        <option value="">Any area</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="seats">Seats Needed</label>
+                    <select id="seats">
+                        <option value="1">1 seat</option>
+                        <option value="2">2 seats</option>
+                        <option value="3">3 seats</option>
+                        <option value="4">4+ seats</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Search Rides</button>
+                </div>
+            </form>
+
+            <div class="filters">
+                <span class="filter-label">Vehicle Type:</span>
+                <button class="filter-chip active" data-filter="all">All</button>
+                <button class="filter-chip" data-filter="Car">Car</button>
+                <button class="filter-chip" data-filter="Van">Van</button>
+                <button class="filter-chip" data-filter="Bike">Bike</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-section">
+        <div class="results-header">
+            <span class="results-count" id="resultsCount">Loading trips...</span>
+            <select class="sort-select" id="sortSelect">
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
+                <option value="time-early">Departure: Earliest</option>
+                <option value="time-late">Departure: Latest</option>
+                <option value="seats">Most Seats Available</option>
+            </select>
+        </div>
+
+        <div class="trip-list" id="tripList">
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentTrips = [];
+        let currentFilter = 'all';
+
+        // Load trips from API
+        async function loadTrips() {
+            const tripList = document.getElementById('tripList');
+            const resultsCount = document.getElementById('resultsCount');
+            
+            tripList.innerHTML = `
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+                <div class="skeleton skeleton-card"></div>
+            `;
+            resultsCount.textContent = 'Loading trips...';
+            
+            try {
+                const fromCity = document.getElementById('fromCity').value;
+                const toCity = document.getElementById('toCity').value;
+                const date = document.getElementById('date').value;
+                const seats = document.getElementById('seats').value;
+                
+                let queryParams = '?action=search';
+                if (fromCity) queryParams += `&from_city=${fromCity}`;
+                if (toCity) queryParams += `&to_city=${toCity}`;
+                if (date) queryParams += `&date=${date}`;
+                if (seats) queryParams += `&seats=${seats}`;
+                
+                const response = await fetch(`api/trips.php${queryParams}`);
+                const result = await response.json();
+                
+                if (result.success && result.trips && result.trips.length > 0) {
+                    currentTrips = result.trips;
+                    renderTrips(currentTrips);
+                } else {
+                    currentTrips = [];
+                    renderTrips([]);
+                }
+            } catch (error) {
+                console.error('Error loading trips:', error);
+                tripList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <h2 class="empty-title">Error Loading Trips</h2>
+                        <p class="empty-text">Please try again later</p>
+                    </div>
+                `;
+                resultsCount.textContent = 'Error loading trips';
+            }
+        }
+
+        // Set minimum date to today
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+
+        // Render trips
+        function renderTrips(trips) {
+            const tripList = document.getElementById('tripList');
+            const resultsCount = document.getElementById('resultsCount');
+
+            if (trips.length === 0) {
+                tripList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <h2 class="empty-title">No trips available</h2>
+                        <p class="empty-text">No trips matching your filters. Try changing the city, date, or vehicle type.</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('searchForm').reset(); loadTrips();">Clear Filters</button>
+                    </div>
+                `;
+                resultsCount.textContent = 'No trips found';
+                return;
+            }
+
+            resultsCount.textContent = `${trips.length} trip${trips.length > 1 ? 's' : ''} found`;
+
+            tripList.innerHTML = trips.map(trip => {
+                const departDateTime = new Date(trip.depart_datetime);
+                const dateStr = departDateTime.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                const timeStr = departDateTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                
+                return `
+                <div class="trip-card" onclick="viewTrip(${trip.id})">
+                    <div class="trip-header">
+                        <div class="trip-route">
+                            <div class="route-cities">
+                                <span class="city-name">${trip.departure_city_name || 'N/A'}</span>
+                                <span class="route-arrow">→</span>
+                                <span class="city-name">${trip.arrival_city_name || 'N/A'}</span>
+                            </div>
+                            <div class="route-areas">${trip.departure_area_name || ''} ${trip.departure_area_name && trip.arrival_area_name ? '→' : ''} ${trip.arrival_area_name || ''}</div>
+                        </div>
+                        <div class="trip-price">
+                            <div class="price-amount">Rs ${trip.price_per_seat || 0}</div>
+                            <div class="price-label">per seat</div>
+                        </div>
+                    </div>
+
+                    <div class="trip-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">📅</span>
+                            <span class="detail-text">${dateStr} at ${timeStr}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🚗</span>
+                            <span class="detail-text">${trip.make || ''} ${trip.model || ''} ${trip.year || ''}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">💺</span>
+                            <span class="detail-text">${trip.seats_left || 0} seat${trip.seats_left > 1 ? 's' : ''} left</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🧳</span>
+                            <span class="detail-text">${trip.luggage_allowance || 'Not specified'}</span>
+                        </div>
+                    </div>
+
+                    <div class="trip-footer">
+                        <div class="owner-info">
+                            <div class="owner-avatar">${trip.owner_name ? trip.owner_name.charAt(0).toUpperCase() : 'O'}</div>
+                            <div class="owner-details">
+                                <div class="owner-name">${trip.owner_name || 'Owner'}</div>
+                                <div class="owner-rating">
+                                    <span class="rating-stars">⭐ ${trip.owner_rating || 'New'}</span> • ${trip.total_bookings || 0} trips
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn-book" onclick="bookTrip(event, ${trip.id})">View & Book</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Filter trips by vehicle type
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                currentFilter = this.dataset.filter;
+                
+                if (currentFilter === 'all') {
+                    renderTrips(currentTrips);
+                } else {
+                    const filtered = currentTrips.filter(trip => trip.vehicle_type === currentFilter);
+                    renderTrips(filtered);
+                }
+            });
+        });
+
+        // Sort trips
+        document.getElementById('sortSelect').addEventListener('change', function() {
+            const sortBy = this.value;
+            let sorted = [...currentTrips];
+            
+            switch(sortBy) {
+                case 'price-low':
+                    sorted.sort((a, b) => (a.price_per_seat || 0) - (b.price_per_seat || 0));
+                    break;
+                case 'price-high':
+                    sorted.sort((a, b) => (b.price_per_seat || 0) - (a.price_per_seat || 0));
+                    break;
+                case 'seats':
+                    sorted.sort((a, b) => (b.seats_left || 0) - (a.seats_left || 0));
+                    break;
+                case 'time-early':
+                    sorted.sort((a, b) => new Date(a.depart_datetime) - new Date(b.depart_datetime));
+                    break;
+                case 'time-late':
+                    sorted.sort((a, b) => new Date(b.depart_datetime) - new Date(a.depart_datetime));
+                    break;
+            }
+            
+            renderTrips(sorted);
+        });
+
+        // Search form submit
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            loadTrips();
+        });
+
+        // View trip details
+        function viewTrip(tripId) {
+            window.location.href = `trip-details.html?id=${tripId}`;
+        }
+
+        // Book trip
+        function bookTrip(event, tripId) {
+            event.stopPropagation();
+            window.location.href = `trip-details.html?id=${tripId}`;
+        }
+
+        // Initial load
+        loadTrips();
+    </script>
+</body>
+</html>

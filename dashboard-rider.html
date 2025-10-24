@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rider Dashboard - Go Swift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1E90FF;
+            --primary-violet: #7B61FF;
+            --accent-teal: #00C2A8;
+            --dark-text: #0F172A;
+            --bg-soft: #F8FAFC;
+            --success: #16A34A;
+            --error: #EF4444;
+            --warning: #F59E0B;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--bg-soft);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .logo img{
+            height: 60px;
+            border-radius: 60px;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--error);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #64748B;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: rgba(30, 144, 255, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.blue {
+            background: rgba(30, 144, 255, 0.1);
+        }
+
+        .stat-icon.green {
+            background: rgba(22, 163, 74, 0.1);
+        }
+
+        .stat-icon.orange {
+            background: rgba(245, 158, 11, 0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .stat-label {
+            color: #64748B;
+            font-size: 0.875rem;
+        }
+
+        .content-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid #E2E8F0;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            color: #64748B;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab:hover,
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+
+        .booking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .booking-item {
+            padding: 1.5rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .booking-item:hover {
+            border-color: var(--primary-blue);
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.1);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .booking-route {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .booking-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .status-confirmed {
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--success);
+        }
+
+        .status-cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .status-completed {
+            background: rgba(100, 116, 139, 0.1);
+            color: #64748B;
+        }
+
+        .booking-details {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+            color: #64748B;
+            font-size: 0.875rem;
+            flex-wrap: wrap;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            color: #64748B;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .booking-details {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .booking-actions {
+                flex-direction: column;
+            }
+
+            .booking-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <img src="logo.jpg" alt=""> Go Swift
+            </a>
+            <div class="nav-actions">
+                <div class="notification-bell">
+                    🔔
+                    <span class="notification-badge">2</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="user-avatar">SA</div>
+                    <span>Sarah Ahmed</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#overview" class="active">📊 Overview</a></li>
+                <li><a href="#bookings">📋 My Bookings</a></li>
+                <li><a href="#search">🔍 Search Trips</a></li>
+                <li><a href="#messages">💬 Messages</a></li>
+                <li><a href="#saved">⭐ Saved Trips</a></li>
+                <li><a href="#settings">⚙️ Settings</a></li>
+                <li><a href="#" onclick="logout()">🚪 Logout</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">My Dashboard</h1>
+                <a href="search.html" class="btn btn-primary">🔍 Find a Ride</a>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📋</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Active Bookings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">⏳</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">Pending Confirmation</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✓</div>
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Completed Trips</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">💰</div>
+                    <div class="stat-value">Rs 18,500</div>
+                    <div class="stat-label">Total Spent</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">My Bookings</h2>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab active">All (18)</div>
+                    <div class="tab">Upcoming (3)</div>
+                    <div class="tab">Pending (2)</div>
+                    <div class="tab">Completed (15)</div>
+                </div>
+
+                <div class="booking-list">
+                    <!-- Confirmed Booking -->
+                    <div class="booking-item">
+                        <div class="booking-header">
+                            <div>
+                                <div class="booking-route">Lahore → Islamabad</div>
+                                <div style="color: #64748B; font-size: 0.875rem;">Gulberg → F-7</div>
+                            </div>
+                            <span class="booking-status status-confirmed">Confirmed</span>
+                        </div>
+                        <div class="booking-details">
+                            <span>📅 Oct 15, 2024 at 08:00 AM</span>
+                            <span>💺 2 seats booked</span>
+                            <span>💰 Rs 2,400</span>
+                            <span>🚗 Honda Civic 2020</span>
+                            <span>👤 Ahmed Khan</span>
+                        </div>
+                        <div>
+                            <strong>Booking Code:</strong> <span style="color: var(--primary-blue);">BK12345A</span>
+                        </div>
+                        <div class="booking-actions" style="margin-top: 1rem;">
+                            <button class="btn btn-secondary btn-sm">🗑️ Cancel Request</button>
+                        </div>
+                    </div>
+
+                    <!-- Completed Booking -->
+                    <div class="booking-item">
+                        <div class="booking-header">
+                            <div>
+                                <div class="booking-route">Karachi → Lahore</div>
+                                <div style="color: #64748B; font-size: 0.875rem;">Defence → DHA</div>
+                            </div>
+                            <span class="booking-status status-completed">Completed</span>
+                        </div>
+                        <div class="booking-details">
+                            <span>📅 Oct 10, 2024 at 06:00 AM</span>
+                            <span>💺 2 seats booked</span>
+                            <span>💰 Rs 5,000</span>
+                            <span>🚗 Toyota Hiace 2019</span>
+                            <span>👤 Fatima Ali</span>
+                        </div>
+                        <div class="booking-actions" style="margin-top: 1rem;">
+                            <button class="btn btn-primary btn-sm">⭐ Leave Review</button>
+                            <button class="btn btn-secondary btn-sm">🔁 Book Again</button>
+                        </div>
+                    </div>
+
+                     <!-- Pending Booking (new block you want to add) -->
+    <div class="booking-item">
+        <div class="booking-header">
+            <div>
+                <div class="booking-route">Islamabad → Rawalpindi</div>
+                <div style="color: #64748B; font-size: 0.875rem;">F-8 → Bahria Town</div>
+            </div>
+            <span class="booking-status status-pending">Pending</span>
+        </div>
+        <div class="booking-details">
+            <span>📅 Oct 16, 2024 at 07:30 AM</span>
+            <span>💺 1 seat booked</span>
+            <span>💰 Rs 300</span>
+            <span>🚗 Suzuki Cultus 2021</span>
+            <span>👤 Hassan Raza</span>
+        </div>
+        <div style="background: rgba(245, 158, 11, 0.1); padding: 0.75rem; border-radius: 8px; margin-top: 0.5rem;">
+            <p style="font-size: 0.875rem; color: var(--warning);">
+                ⏳ Waiting for owner confirmation. You'll be notified once they respond.
+            </p>
+        </div>
+        <div class="booking-actions" style="margin-top: 1rem;">
+            <button class="btn btn-primary btn-sm">👁️ View Details</button>
+            <button class="btn btn-secondary btn-sm">💬 Message Owner</button>
+            <button class="btn btn-secondary btn-sm">🗑️ Cancel Booking</button>
+        </div>
+    </div>
+</div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Quick Actions</h2>
+                </div>
+                <div class="stats-grid">
+                    <a href="search.html" class="stat-card" style="cursor: pointer; text-decoration: none; color: inherit;">
+                        <div class="stat-icon blue">🔍</div>
+                        <div style="font-weight: 600;">Search Trips</div>
+                        <div style="color: #64748B; font-size: 0.875rem;">Find your next ride</div>
+                    </a>
+                    <div class="stat-card" style="cursor: pointer;">
+                        <div class="stat-icon orange">💬</div>
+                        <div style="font-weight: 600;">Messages</div>
+                        <div style="color: #64748B; font-size: 0.875rem;">2 unread messages</div>
+                    </div>
+                    <div class="stat-card" style="cursor: pointer;">
+                        <div class="stat-icon green">👤</div>
+                        <div style="font-weight: 600;">My Profile</div>
+                        <div style="color: #64748B; font-size: 0.875rem;">Update your info</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load bookings data
+async function loadBookingsData(status = 'all') {
+    try {
+        let url = 'api/bookings.php?action=my-bookings';
+        if (status !== 'all') {
+            url += `&status=${status}`;
+        }
+        
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        if (result.success) {
+            updateBookingsList(result.bookings);
+            updateStatsCards(result.bookings);
+        }
+    } catch (error) {
+        console.error('Error loading bookings:', error);
+    }
+}
+
+// Update bookings list
+function updateBookingsList(bookings) {
+    const list = document.querySelector('.booking-list');
+    
+    if (bookings.length === 0) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>No Bookings Yet</h3>
+                <p class="empty-text">Start your journey by searching for available trips.</p>
+                <a href="search.html" class="btn btn-primary">🔍 Search Trips</a>
+            </div>
+        `;
+        return;
+    }
+    
+    list.innerHTML = bookings.map(booking => {
+        const date = new Date(booking.depart_datetime);
+        const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        const timeStr = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        
+        let statusClass = '';
+        let statusText = '';
+        
+        switch(booking.status) {
+            case 'confirmed':
+                statusClass = 'status-confirmed';
+                statusText = 'Confirmed';
+                break;
+            case 'pending':
+                statusClass = 'status-pending';
+                statusText = 'Pending';
+                break;
+            case 'cancelled':
+                statusClass = 'status-cancelled';
+                statusText = 'Cancelled';
+                break;
+            case 'completed':
+                statusClass = 'status-completed';
+                statusText = 'Completed';
+                break;
+        }
+        
+        return `
+            <div class="booking-item">
+                <div class="booking-header">
+                    <div>
+                        <div class="booking-route">${booking.departure_city_name} → ${booking.arrival_city_name}</div>
+                        <div style="color: #64748B; font-size: 0.875rem;">${booking.departure_area_name || ''} → ${booking.arrival_area_name || ''}</div>
+                    </div>
+                    <span class="booking-status ${statusClass}">${statusText}</span>
+                </div>
+                <div class="booking-details">
+                    <span>📅 ${dateStr} at ${timeStr}</span>
+                    <span>💺 ${booking.seats_booked} seat(s) booked</span>
+                    <span>💰 Rs ${booking.total_price}</span>
+                    <span>🚗 ${booking.make} ${booking.model}</span>
+                    <span>👤 ${booking.owner_name}</span>
+                </div>
+                ${booking.status === 'confirmed' ? `
+                    <div>
+                        <strong>Booking Code:</strong> <span style="color: var(--primary-blue);">${booking.booking_code}</span>
+                    </div>
+                ` : ''}
+                ${booking.status === 'pending' ? `
+                    <div style="background: rgba(245, 158, 11, 0.1); padding: 0.75rem; border-radius: 8px; margin-top: 0.5rem;">
+                        <p style="font-size: 0.875rem; color: var(--warning);">
+                            ⏳ Waiting for owner confirmation. You'll be notified once they respond.
+                        </p>
+                    </div>
+                ` : ''}
+                <div class="booking-actions" style="margin-top: 1rem;">
+                    <button class="btn btn-primary btn-sm">👁️ View Details</button>
+                    ${booking.status === 'pending' || booking.status === 'confirmed' ? `
+                        <button class="btn btn-secondary btn-sm" onclick="cancelBooking(${booking.id})">🗑️ Cancel Booking</button>
+                    ` : ''}
+                    ${booking.status === 'completed' ? `
+                        <button class="btn btn-primary btn-sm">⭐ Leave Review</button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update stats cards
+function updateStatsCards(bookings) {
+    const activeCount = bookings.filter(b => b.status === 'confirmed').length;
+    const pendingCount = bookings.filter(b => b.status === 'pending').length;
+    const completedCount = bookings.filter(b => b.status === 'completed').length;
+    const totalSpent = bookings.reduce((sum, b) => sum + parseFloat(b.total_price || 0), 0);
+    
+    document.querySelector('.stat-card:nth-child(1) .stat-value').textContent = activeCount;
+    document.querySelector('.stat-card:nth-child(2) .stat-value').textContent = pendingCount;
+    document.querySelector('.stat-card:nth-child(3) .stat-value').textContent = completedCount;
+    document.querySelector('.stat-card:nth-child(4) .stat-value').textContent = `Rs ${totalSpent.toLocaleString()}`;
+}
+
+// Page load
+window.addEventListener('DOMContentLoaded', function() {
+    loadBookingsData();
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a Trip - Go Swift</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #1E90FF;
+            --primary-violet: #7B61FF;
+            --accent-teal: #00C2A8;
+            --dark-text: #0F172A;
+            --bg-soft: #F8FAFC;
+            --success: #16A34A;
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--dark-text);
+            background-color: var(--bg-soft);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+        }
+
+        /* Header */
+        header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .logo img{
+            height: 60px;
+            border-radius: 60px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-violet));
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 144, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+        }
+
+        /* Form Container */
+        .form-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .form-box {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .form-header {
+            margin-bottom: 2rem;
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: #64748B;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--dark-text);
+        }
+
+        .form-group label .required {
+            color: var(--error);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.75rem;
+            border: 2px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-help {
+            font-size: 0.75rem;
+            color: #64748B;
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        /* Preview Card */
+        .preview-card {
+            background: var(--bg-soft);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 2px solid #E2E8F0;
+            margin-top: 1rem;
+        }
+
+        .preview-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .preview-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .preview-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .preview-label {
+            font-size: 0.75rem;
+            color: #64748B;
+            margin-bottom: 0.25rem;
+        }
+
+        .preview-value {
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #E2E8F0;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #D97706;
+            border-left: 4px solid #F59E0B;
+        }
+
+        .alert-info {
+            background: rgba(30, 144, 255, 0.1);
+            color: #1E90FF;
+            border-left: 4px solid #1E90FF;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-box {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .form-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="index.html" class="logo">
+                <img src="logo.jpg" alt=""> Go Swift
+            </a>
+            <a href="dashboard-owner.html" class="btn btn-secondary">← Back to Dashboard</a>
+        </nav>
+    </header>
+
+    <div class="form-container">
+        <div class="form-box">
+            <div class="form-header">
+                <h1>Post a New Trip</h1>
+                <p>Fill in the details below to post your trip and connect with riders</p>
+            </div>
+
+            <div class="alert alert-info">
+                💡 <strong>Tip:</strong> Provide accurate details to attract more riders. You can edit your trip later if needed.
+            </div>
+
+            <form id="postTripForm">
+                <!-- Vehicle Selection -->
+                <div class="form-section">
+                    <h3 class="section-title">🚗 Select Vehicle</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Vehicle <span class="required">*</span></label>
+                            <select name="vehicle_id" id="vehicleSelect" required>
+                                <option value="">Loading vehicles...</option>
+                            </select>
+                            <span class="form-help">Only verified vehicles are shown. <a href="vehicle-register.html">Register a new vehicle</a></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Route Details -->
+                <div class="form-section">
+                    <h3 class="section-title">📍 Route Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Departure City <span class="required">*</span></label>
+                            <select name="departure_city_id" id="departureCity" required>
+                                <option value="">Select city</option>
+                                <option value="1">Karachi</option>
+                                <option value="2">Lahore</option>
+                                <option value="3">Islamabad</option>
+                                <option value="4">Rawalpindi</option>
+                                <option value="5">Faisalabad</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Departure Area</label>
+                            <select name="departure_area_id" id="departureArea">
+                                <option value="">Select area</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Arrival City <span class="required">*</span></label>
+                            <select name="arrival_city_id" id="arrivalCity" required>
+                                <option value="">Select city</option>
+                                <option value="1">Karachi</option>
+                                <option value="2">Lahore</option>
+                                <option value="3">Islamabad</option>
+                                <option value="4">Rawalpindi</option>
+                                <option value="5">Faisalabad</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Arrival Area</label>
+                            <select name="arrival_area_id" id="arrivalArea">
+                                <option value="">Select area</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Date & Time -->
+                <div class="form-section">
+                    <h3 class="section-title">📅 Date & Time</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Departure Date <span class="required">*</span></label>
+                            <input type="date" name="departure_date" id="departureDate" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Departure Time <span class="required">*</span></label>
+                            <input type="time" name="departure_time" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trip Details -->
+                <div class="form-section">
+                    <h3 class="section-title">💺 Trip Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Available Seats <span class="required">*</span></label>
+                            <input type="number" name="seats_total" min="1" max="10" required>
+                            <span class="form-help">Maximum seats in your vehicle</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Price Per Seat (Rs) <span class="required">*</span></label>
+                            <input type="number" name="price_per_seat" min="0" step="50" required>
+                            <span class="form-help">Set 0 for free rides</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Luggage Allowance</label>
+                            <select name="luggage_allowance">
+                                <option value="">Select option</option>
+                                <option value="1 small bag">1 small bag</option>
+                                <option value="1 bag per person">1 bag per person</option>
+                                <option value="2 bags per person">2 bags per person</option>
+                                <option value="No luggage">No luggage</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>Trip Notes</label>
+                            <textarea name="notes" placeholder="Add any additional information for riders (pickup points, stops, preferences, etc.)"></textarea>
+                            <span class="form-help">Optional: Provide helpful details for riders</span>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <div class="checkbox-group">
+                                <input type="checkbox" name="allow_partial_booking" id="partialBooking" checked>
+                                <label for="partialBooking">Allow partial booking (riders can book any number of seats)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="preview-card" id="previewCard" style="display: none;">
+                    <div class="preview-title">📋 Trip Preview</div>
+                    <div class="preview-details">
+                        <div class="preview-item">
+                            <span class="preview-label">Route</span>
+                            <span class="preview-value" id="previewRoute">-</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Date & Time</span>
+                            <span class="preview-value" id="previewDateTime">-</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Available Seats</span>
+                            <span class="preview-value" id="previewSeats">-</span>
+                        </div>
+                        <div class="preview-item">
+                            <span class="preview-label">Price Per Seat</span>
+                            <span class="preview-value" id="previewPrice">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="previewTrip()">👁️ Preview</button>
+                    <button type="submit" class="btn btn-primary">🚀 Post Trip</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Load user's vehicles on page load
+        async function loadUserVehicles() {
+            const vehicleSelect = document.getElementById('vehicleSelect');
+            vehicleSelect.innerHTML = '<option value="">Loading vehicles...</option>';
+            
+            try {
+                const response = await fetch('api/vehicles.php?action=my-vehicles');
+                const result = await response.json();
+                
+                if (result.success && result.vehicles && result.vehicles.length > 0) {
+                    vehicleSelect.innerHTML = '<option value="">Select your vehicle</option>';
+                    
+                    // Filter only verified vehicles
+                    const verifiedVehicles = result.vehicles.filter(v => v.status === 'verified');
+                    
+                    if (verifiedVehicles.length > 0) {
+                        verifiedVehicles.forEach(vehicle => {
+                            const option = document.createElement('option');
+                            option.value = vehicle.id;
+                            option.textContent = `${vehicle.make} ${vehicle.model} ${vehicle.year} - ${vehicle.plate_number}`;
+                            vehicleSelect.appendChild(option);
+                        });
+                    } else {
+                        vehicleSelect.innerHTML = '<option value="">No verified vehicles available</option>';
+                    }
+                } else {
+                    vehicleSelect.innerHTML = '<option value="">No vehicles registered</option>';
+                }
+            } catch (error) {
+                console.error('Error loading vehicles:', error);
+                vehicleSelect.innerHTML = '<option value="">Select your vehicle</option>';
+            }
+        }
+
+        // Call this function when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            loadUserVehicles();
+        });
+
+        // Set minimum date to today
+        const dateInput = document.getElementById('departureDate');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+
+        // Area mapping (sample data)
+        const areasByCity = {
+            '1': [{id: 1, name: 'Clifton'}, {id: 2, name: 'Defence'}, {id: 3, name: 'Gulshan-e-Iqbal'}],
+            '2': [{id: 6, name: 'Gulberg'}, {id: 7, name: 'Model Town'}, {id: 8, name: 'DHA'}],
+            '3': [{id: 11, name: 'F-6'}, {id: 12, name: 'F-7'}, {id: 13, name: 'F-8'}],
+            '4': [{id: 16, name: 'Satellite Town'}, {id: 17, name: 'Bahria Town'}]
+        };
+
+        // Update areas when city changes
+        document.getElementById('departureCity').addEventListener('change', function() {
+            updateAreas('departureArea', this.value);
+        });
+
+        document.getElementById('arrivalCity').addEventListener('change', function() {
+            updateAreas('arrivalArea', this.value);
+        });
+
+        function updateAreas(selectId, cityId) {
+            const select = document.getElementById(selectId);
+            select.innerHTML = '<option value="">Select area</option>';
+            
+            if (areasByCity[cityId]) {
+                areasByCity[cityId].forEach(area => {
+                    const option = document.createElement('option');
+                    option.value = area.id;
+                    option.textContent = area.name;
+                    select.appendChild(option);
+                });
+            }
+        }
+
+        // Preview trip
+        function previewTrip() {
+            const form = document.getElementById('postTripForm');
+            const formData = new FormData(form);
+            
+            const depCity = form.departure_city_id.options[form.departure_city_id.selectedIndex].text;
+            const arrCity = form.arrival_city_id.options[form.arrival_city_id.selectedIndex].text;
+            const depArea = form.departure_area_id.value ? form.departure_area_id.options[form.departure_area_id.selectedIndex].text : '';
+            const arrArea = form.arrival_area_id.value ? form.arrival_area_id.options[form.arrival_area_id.selectedIndex].text : '';
+            
+            const route = `${depCity}${depArea ? ' (' + depArea + ')' : ''} → ${arrCity}${arrArea ? ' (' + arrArea + ')' : ''}`;
+            const dateTime = `${formData.get('departure_date')} at ${formData.get('departure_time')}`;
+            const seats = formData.get('seats_total');
+            const price = `Rs ${formData.get('price_per_seat')}`;
+            
+            document.getElementById('previewRoute').textContent = route;
+            document.getElementById('previewDateTime').textContent = dateTime;
+            document.getElementById('previewSeats').textContent = seats;
+            document.getElementById('previewPrice').textContent = price;
+            
+            document.getElementById('previewCard').style.display = 'block';
+            document.getElementById('previewCard').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Handle form submission
+        document.getElementById('postTripForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                if (key === 'allow_partial_booking') {
+                    data[key] = document.getElementById('partialBooking').checked ? 1 : 0;
+                } else {
+                    data[key] = value;
+                }
+            });
+            
+            // Combine date and time
+            data.depart_datetime = `${data.departure_date} ${data.departure_time}`;
+            delete data.departure_date;
+            delete data.departure_time;
+            
+            try {
+                const response = await fetch('api/trips.php?action=create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Trip posted successfully!');
+                    window.location.href = 'dashboard-owner.html';
+                } else {
+                    alert('❌ Error: ' + (result.error || 'Failed to post trip'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Failed to post trip. Please try again.');
+            }
+        });
+
+        // Load vehicles when page loads
+        loadUserVehicles();
+    </script>
+</body>
+</html>
